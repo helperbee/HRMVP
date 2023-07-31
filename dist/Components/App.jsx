@@ -1,7 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { socket } from '../socket';
-import { MyForm } from './MyForm.jsx';
-
+import Features from './Features.jsx';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import TwitchStream from './TwitchStream.jsx';
+const theme = createTheme({
+  palette: {
+    type: 'light',
+    primary: {
+      main: '#558b2f',
+      light: '#4caf50',
+      dark: '#43a047',
+      contrastText: '#ffffff',
+    },
+    secondary: {
+      main: '#29b6f6',
+      light: '#26c6da',
+    },
+    background: {
+      default: '#bdbdbd',
+      paper: '#000',
+    },
+    divider: '#303030',
+    text: {
+      primary: '#000000',
+      secondary: '#fafafa',
+    },
+  },
+});
 export default function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [supportedEvents, setSupportedEvents] = useState([]);
@@ -33,9 +59,11 @@ export default function App() {
   }, []);
 
   return (
-    <div className="App">
-      <h3>YOU ARE {isConnected ? '' : 'NOT'} CONNECTED</h3>
-      <MyForm supportedEvents={supportedEvents}/>
-    </div>
+    <ThemeProvider theme={theme}>
+      <h2 style={{textAlign:'center'}}>CONNECTION : {isConnected ? <span style={{color:'green'}}>ACTIVE</span> : <span style={{color:'red'}}>DEAD</span>}</h2>
+      <CssBaseline />      
+      <TwitchStream />
+      <Features supportedEvents={supportedEvents}/>
+    </ThemeProvider>
   );
 }

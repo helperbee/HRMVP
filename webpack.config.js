@@ -1,4 +1,7 @@
 const path = require('path');
+const dotenv = require('dotenv');
+
+const webpack = require('webpack');
 
 module.exports = {
   entry: './dist/index.js',
@@ -17,5 +20,10 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.AWS_SERVER': JSON.stringify(process.env.AWS_SERVER),
+    }),
+  ],
 };
