@@ -1,7 +1,7 @@
 import React from 'react';
 
 const TwitchStream = () => {
-  const twitchIframeSrc = 'https://player.twitch.tv/?channel=mmpesto&parent=localhost';
+  const twitchIframeSrc = 'https://player.twitch.tv/?channel=mmpesto';
 
   return (
     <div

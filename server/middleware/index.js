@@ -4,19 +4,18 @@ const jwt = require('jsonwebtoken');
 
 
 
-function verifyAndDecode(token) {
-
-      try {
-        const key = process.env.TWITCH_EXTENSION;
-        const secret = Buffer.from(key, 'base64');
-        
-        return jwt.verify(token, secret, { algorithms: ['HS256'] });
-      }
-      catch (e) {
-        return console.log('Invalid JWT');
-      }
+let verifyAndDecode =  (token) => {
+  try {
+    const key = process.env.TWITCH_EXTENSION;
+    const secret = Buffer.from(key, 'base64');
     
+    return jwt.verify(token, secret, { algorithms: ['HS256'] });
   }
+  catch (e) {
+    return console.log('Invalid JWT');
+  }
+    
+}
 let TwitchInfo = (req, callback) => {
     
     //use session token
@@ -24,7 +23,7 @@ let TwitchInfo = (req, callback) => {
     if(token){
       let userInfo = verifyAndDecode(token);
       if(!userInfo){
-        console.log('Cant decode');
+        console.log('Cant decode userInfo.');
         return req;
       }
       axios.post(`https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`).then((r) => {
@@ -49,11 +48,6 @@ let TwitchInfo = (req, callback) => {
     callback('No twitch session defined? They could be requesting from the frontend.');
   }
 };
-
-
-
-
-
 module.exports = {
     TwitchInfo
 }

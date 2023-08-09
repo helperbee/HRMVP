@@ -15,28 +15,22 @@ const io = new Server(server, {cors: {
   origin: "*",
   methods: ["GET", "POST"]
 }});
-let workerId = undefined;
+
+let workerId = undefined; // lazy implementation
 
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-
 app.get('/api', TwitchInfo, (req, res) => {
   res.send(req.twitch ? req.twitch.display_name : 'Anonymous');
 });
-
 
 server.listen(serverPort, () => {
   console.log(`Server hosted on port:${serverPort}`);
 });
 
-// io.use((socket, next) => {
-//   console.log("Headers from the client:", socket);
-//   next();
-// });
-
-//this could be done through a database but meh
+//supportedEvents = a basic list of events that are supported currently. could add DB + Dashboard
 let supportedEvents = [
   {
     id: 1,
@@ -80,14 +74,13 @@ io.on('connection', (socket) => {
       if(workerId){
         try{
           let { twitchSession, ...sending } = updated || arg; // less clutter
-          io.to(workerId).emit('message', sending);       
-          supportedEvents[sending.id - 1].quantity--;
+          io.to(workerId).emit('message', sending); //send event to worker client for processing.      
+          supportedEvents[sending.id - 1].quantity--; //decrement event's quantity. could wait for response from worker, but this can help with message spamming.
           if(supportedEvents[sending.id - 1].quantity <= 0){
             //resend the supported list back to the connected clients.
             let bonus = supportedEvents.every(s => s.quantity === 0 && s.name !== 'Gem');//To prevent forever gem attempting. 1 & done
             if(bonus){
-              supportedEvents.push({              
-                
+              supportedEvents.push({                              
                   id: 4,
                   name: 'Gem',
                   quantity: 1,      
